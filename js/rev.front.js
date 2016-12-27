@@ -1,4 +1,4 @@
-window.DesignMode && (window.top.RevDesign = (function ($, window) {
+window.DesignMode && (window.top.RevDesign = window.top.RevDesign || (function ($, window) {
     var Design, editor = $('<iframe>', { 'class': 'theme-editor__iframe' }).insertAfter('#theme-editor-iframe').css({ 'position': 'absolute', 'top': 0 }).hide();
     editor.parent().css({ position: 'relative' });
     window.addEventListener('message', function (e) {
@@ -22,21 +22,16 @@ window.DesignMode && (window.top.RevDesign = (function ($, window) {
                     Design.editSetting(section.id)
                 });
                 //btnEdit.next().hide().next().hide();
-                panel.on('click', '.ui-action-list__item', function () {
-                    Design.editSlide(section.id, $(this).parent().attr('data-block-id'));
-                    return false;
-                });
+
             },
             onDeselect: function () {
                 Design.unLoadEditor();
+            },
+            onBlockSelect: function (evt) {
+                Design.editSlide(evt.detail.sectionId, evt.detail.blockId);
             }
         });
         section.onSelect();
-        //section.node = 
-        //if(!section.node.length || section.node.data('rev-design')) return;
-        //section.node.data('rev-design', true);
-        //$('<style>#section-revolution-slideshow-' + section.id + ' .ui-accordion{display:none !important;}</style>').appendTo("head");
-        //editor.prop('src','about:blank').show().prop('src','https://localhost/slide/slide.html?');
     }, {
         sections: {},
         post: function (action, args) {

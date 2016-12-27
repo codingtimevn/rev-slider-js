@@ -17,10 +17,10 @@
 
 
 
-    <link rel='stylesheet' href='https://localhost/wordpress/wp-content/plugins/revslider/admin/assets/css/global.css?ver=5.3.1.5' type='text/css' media='all' />
-    <link rel='stylesheet' href='https://localhost/wordpress/wp-content/plugins/revslider/admin/assets/css/admin.css?ver=5.3.1.5' type='text/css' media='all' />
-    <link rel='stylesheet' href='https://localhost/wordpress/wp-content/plugins/revslider/admin/assets/css/edit_layers.css?ver=5.3.1.5' type='text/css' media='all' />
-    <link rel='stylesheet' href='https://localhost/wordpress/wp-content/plugins/revslider/public/assets/css/settings.css?ver=5.3.1.5' type='text/css' media='all' />
+    <link rel='stylesheet' href='css/global.css?ver=5.3.1.5' type='text/css' media='all' />
+    <link rel='stylesheet' href='css/admin.css?ver=5.3.1.5' type='text/css' media='all' />
+    <link rel='stylesheet' href='css/edit_layers.css?ver=5.3.1.5' type='text/css' media='all' />
+    <link rel='stylesheet' href='css/settings.css?ver=5.3.1.5' type='text/css' media='all' />
 
     <style type='text/css'>
         body {
@@ -1848,9 +1848,8 @@
 
 
     <script type='text/javascript' src='js/rev.design.js'></script>
-
-
-    <script type='text/javascript' src='https://localhost/wordpress/wp-content/plugins/revslider/public/assets/js/jquery.themepunch.tools.min.js?ver=5.3.1.5'></script>
+    <script type='text/javascript' src='js/pako.min.js'></script>
+    <script type='text/javascript' src='js/jquery.themepunch.tools.min.js'></script>
 </head>
 <body>
     <div id="wpwrap">
@@ -9477,29 +9476,8 @@
                                     <div data-type="mobile" class="rs-preview-device_selector_prev rs-preview-ds-mobile"></div>
 
                                 </div>
-                                <div class="rs-frame-preview-wrapper">
-                                    <iframe id="rs-frame-preview" name="rs-frame-preview"></iframe>
-                                </div>
                             </div>
                         </div>
-                        <form id="rs-preview-form" name="rs-preview-form" action="https://localhost/wordpress/wp-admin/admin-ajax.php?action=revslider_ajax_action" target="rs-frame-preview" method="post">
-                            <input type="hidden" id="rs-client-action" name="client_action" value="">
-                            <input type="hidden" id="rs-nonce" name="rs-nonce" value="2c33d74ea8">
-
-                            <!-- SPECIFIC FOR SLIDE PREVIEW -->
-                            <input type="hidden" name="data" value="" id="preview-slide-data">
-
-                            <!-- SPECIFIC FOR SLIDER PREVIEW -->
-                            <input type="hidden" id="preview_sliderid" name="sliderid" value="">
-                            <input type="hidden" id="preview_slider_markup" name="only_markup" value="">
-                        </form>
-
-
-                        <div id="dialog_preview_sliders" class="dialog_preview_sliders" title="Preview Slider" style="display:none;">
-                            <iframe id="frame_preview_slider" name="frame_preview_slider" style="width: 100%;"></iframe>
-                        </div>
-
-
                         <div id="rs-premium-benefits-dialog" style="display: none;">
                             <div class="rs-premium-benefits-dialogtitles" id="rs-wrong-purchase-code-title">
                                 <span class="oppps-icon"></span>
@@ -11097,7 +11075,7 @@
                     sectionId: hash[0],
                     slideId: hash[1],
                     loadSlide: function (data) {
-                        data = data ? JSON.parse(data) : { params: {}, layers: [] };
+                        data = data ? JSON.parse(pako.inflate(atob(data), { to: 'string' })) : { params: {}, layers: [] };
                         RevSliderSettings.setSettingsObject('form_slide_params', data.params);
                         UniteLayersRev.setInitLayersJson(JSON.stringify(data.layers));
                         UniteLayersRev.init(data.params.delay || 9000);
@@ -11110,7 +11088,8 @@
                         }
                     },
                     saveSlide: function () {
-                        post('saveSlide', [MsgEvt.sectionId, MsgEvt.slideId, JSON.stringify(RevSliderAdmin.getSlideData())]);
+                        var data = JSON.stringify(RevSliderAdmin.getSlideData());
+                        post('saveSlide', [MsgEvt.sectionId, MsgEvt.slideId, btoa(pako.deflate(data, { to: 'string' }))]);
                     },
                     changeEditor: function (url, sectionId, slideId) {
                         if (sectionId == MsgEvt.sectionId && slideId == MsgEvt.slideId) return;

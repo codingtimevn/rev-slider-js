@@ -2050,6 +2050,7 @@ var RevSliderSettings = new function () {
                     element.checked = value;
                     break;
                 case "radio":
+                    if (element.value != value) continue;
                     element.checked = element.value == value;
                     break;
                 case "editor":
@@ -24065,25 +24066,6 @@ var RevSliderAdmin = new function () {
             location.href = urlAjaxExport;
 
         });
-    }
-
-    /**
-	 * open preview slider dialog
-	 */
-    var openPreviewSliderDialog = function (sliderID) {
-
-        var rs_form = jQuery('#rs-preview-form');
-
-        //set action and data
-        jQuery("#rs-client-action").val('preview_slider');
-        jQuery("#preview_sliderid").val(sliderID);
-        jQuery("#preview_slider_markup").val('false');
-
-        rs_form.submit();
-
-        jQuery('#rs-preview-wrapper').show();
-
-        jQuery(window).trigger('resize');
     }
 
     /**
